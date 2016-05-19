@@ -1,7 +1,7 @@
 summary: nginx high performance web server
 name: nginx
 version: 1.10.0
-release: 1.el6
+release: 2.el6
 # MIT License
 # http://opensource.org/licenses/MIT
 license: MIT
@@ -16,6 +16,7 @@ for the Nginx server including the correct permissions for the
 directories.
 
 %global bin_dir %_usr/bin
+%global sbin_dir /sbin
 %global nginx_prefix %_sysconfdir/nginx
 
 %prep
@@ -32,17 +33,17 @@ ret=0
 %bin_dir/getent passwd %name >> /dev/null 2>&1 && ret=1
 if [ ${ret} -lt 1 ]
   then 
-    %_sbindir/useradd -c "Nginx" -s /bin/false -r -d %nginx_prefix/sbin %name 2>/dev/null
+    %sbin_dir/useradd -c "Nginx" -s /bin/false -r -d %nginx_prefix/sbin %name 2>/dev/null
   fi
 
 %post
-%_sbindir/service nginx reload
-%_sbindir/chkconfig nginx on 2>/dev/null
-%_sbindir/service nginx start
+%sbin_dir/chkconfig nginx on 2>/dev/null
+%sbin_dir/service nginx stop
+%sbin_dir/service nginx start
 
 %preun
-%_sbindir/chkconfig nginx off 2>/dev/null
-%_sbindir/service nginx stop
+%sbin_dir/chkconfig nginx off 2>/dev/null
+%sbin_dir/service nginx stop
 
 # preserve configs and index.html
 %__cp -f %nginx_prefix/html/index.html %nginx_prefix/html/index.html.rpmsave
@@ -87,7 +88,7 @@ ret=0
 %bin_dir/getent passwd %name >> /dev/null 2>&1 && ret=1
 if [ ${ret} -lt 1 ]
   then 
-    %_sbindir/useradd -c "Nginx" -s /bin/false -r -d %nginx_prefix/sbin %name 2>/dev/null
+    %sbin_dir/useradd -c "Nginx" -s /bin/false -r -d %nginx_prefix/sbin %name 2>/dev/null
   fi
 
 %make_install
@@ -103,7 +104,7 @@ if [ ${ret} -lt 1 ]
 %__install -p -m 0644 -D %_sourcedir/nginxtras/nginx.logrotate %buildroot/%_sysconfdir/logrotate.d/nginx
 
 # add init.d script
-%__install -p -m 0644 -o root -g root -D %_sourcedir/nginxtras/nginx %buildroot/%_sysconfdir/init.d/nginx
+%__install -p -m 0755 -o root -g root -D %_sourcedir/nginxtras/nginx %buildroot/%_sysconfdir/init.d/nginx
 
 # add custom nginx config
 %__install -p -m 0644 -o nginx -g nginx -D %_sourcedir/nginxtras/nginx.conf %buildroot/%nginx_prefix/conf/nginx.conf
