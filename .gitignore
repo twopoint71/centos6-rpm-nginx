@@ -1,0 +1,10 @@
+# ignore all
+*
+
+# save these files
+!.gitignore
+!LICENSE.txt
+!README.md
+!SPECS/*
+!SOURCES/nginxtras/*
+
