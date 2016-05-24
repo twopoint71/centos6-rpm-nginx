@@ -1,7 +1,7 @@
 summary: nginx high performance web server
 name: nginx
 version: 1.10.0
-release: 2.el6
+release: 3.el6
 # MIT License
 # http://opensource.org/licenses/MIT
 license: MIT
@@ -15,7 +15,8 @@ The nginx-filesystem package contains the basic directory layout
 for the Nginx server including the correct permissions for the
 directories.
 
-%global bin_dir %_usr/bin
+%global usr_bin_dir %_usr/bin
+%global usr_sbin_dir %_usr/sbin
 %global sbin_dir /sbin
 %global nginx_prefix %_sysconfdir/nginx
 
@@ -30,10 +31,10 @@ directories.
 # http://stackoverflow.com/questions/14810684/check-whether-a-user-exists
 # installs user for "rpm -i"
 ret=0
-%bin_dir/getent passwd %name >> /dev/null 2>&1 && ret=1
+%usr_bin_dir/getent passwd %name >> /dev/null 2>&1 && ret=1
 if [ ${ret} -lt 1 ]
   then 
-    %sbin_dir/useradd -c "Nginx" -s /bin/false -r -d %nginx_prefix/sbin %name 2>/dev/null
+    %usr_sbin_dir/useradd -c "Nginx" -s /bin/false -r -d %nginx_prefix/sbin %name 2>/dev/null
   fi
 
 %post
@@ -85,10 +86,10 @@ for i in cache logs sbin ssl
 # http://stackoverflow.com/questions/14810684/check-whether-a-user-exists
 # installs user for "rpmbuild"
 ret=0
-%bin_dir/getent passwd %name >> /dev/null 2>&1 && ret=1
+%usr_bin_dir/getent passwd %name >> /dev/null 2>&1 && ret=1
 if [ ${ret} -lt 1 ]
   then 
-    %sbin_dir/useradd -c "Nginx" -s /bin/false -r -d %nginx_prefix/sbin %name 2>/dev/null
+    %usr_sbin_dir/useradd -c "Nginx" -s /bin/false -r -d %nginx_prefix/sbin %name 2>/dev/null
   fi
 
 %make_install
@@ -120,8 +121,8 @@ if [ ${ret} -lt 1 ]
 %__install -p -m 0644 -o nginx -g nginx -D %_sourcedir/nginxtras/php-test.php %buildroot/%nginx_prefix/html/php-test.php
 
 # adjust permissions
-%bin_dir/find %buildroot/%nginx_prefix -type f -exec %__chmod 0644 {} \; -exec %__chown %name:%name {} \;
-%bin_dir/find %buildroot/%nginx_prefix -type d -exec %__chmod 0755 {} \; -exec %__chown %name:%name {} \;
+%usr_bin_dir/find %buildroot/%nginx_prefix -type f -exec %__chmod 0644 {} \; -exec %__chown %name:%name {} \;
+%usr_bin_dir/find %buildroot/%nginx_prefix -type d -exec %__chmod 0755 {} \; -exec %__chown %name:%name {} \;
 %__chmod 0755 %buildroot/%nginx_prefix/sbin/nginx
 
 %files
@@ -162,4 +163,3 @@ if [ ${ret} -lt 1 ]
 %if "%noclean" == ""
    rm -rf $RPM_BUILD_ROOT
 %endif
-
