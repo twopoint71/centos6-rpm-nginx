@@ -5,6 +5,6 @@
 !.gitignore
 !LICENSE.txt
 !README.md
-!SPECS/*
+!SPECS/nginx.spec
 !SOURCES/nginxtras/*
 
