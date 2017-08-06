@@ -1,14 +1,14 @@
 summary: nginx high performance web server
 name: nginx
-version: 1.10.0
-release: 3.el6
+version: 1.12.1
+release: 1.el6
 # MIT License
 # http://opensource.org/licenses/MIT
 license: MIT
-source:  http://nginx.org/download/nginx-1.10.0.tar.gz
-source1: ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/pcre-8.38.tar.gz
-source2: http://zlib.net/zlib-1.2.8.tar.gz
-source3: https://www.openssl.org/source/openssl-1.0.2h.tar.gz
+source:  http://nginx.org/download/nginx-1.12.1.tar.gz
+source1: ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/pcre-8.41.tar.gz
+source2: http://zlib.net/zlib-1.2.11.tar.gz
+source3: https://www.openssl.org/source/openssl-1.0.2l.tar.gz
 
 %description
 The nginx-filesystem package contains the basic directory layout
@@ -18,7 +18,7 @@ directories.
 %global usr_bin_dir %_usr/bin
 %global usr_sbin_dir %_usr/sbin
 %global sbin_dir /sbin
-%global nginx_prefix %_sysconfdir/nginx
+%global nginx_prefix %_usr/local/nginx
 
 %prep
 %setup
@@ -46,8 +46,7 @@ if [ ${ret} -lt 1 ]
 %sbin_dir/chkconfig nginx off 2>/dev/null
 %sbin_dir/service nginx stop
 
-# preserve configs and index.html
-%__cp -f %nginx_prefix/html/index.html %nginx_prefix/html/index.html.rpmsave
+# preserve configs
 %__cp -f %nginx_prefix/conf/nginx.conf %nginx_prefix/conf/nginx.conf.rpmsave
 %__cp -f %nginx_prefix/sites-available/vhost.example.conf %nginx_prefix/sites-available/vhost.example.conf.rpmsave
 
@@ -58,7 +57,7 @@ for i in cache logs sbin ssl
   done
 %__rm -f %_sysconfdir/init.d/nginx
 %__rm -f %_sysconfdir/logrotate.d/nginx
-%__rm -f %_usr/local/bin/nginx
+%__rm -f %_usr/local/sbin/nginx
 
 %build
 ./configure \
@@ -68,18 +67,21 @@ for i in cache logs sbin ssl
 --with-http_stub_status_module \
 --with-ipv6 \
 --with-file-aio \
---with-zlib=%_builddir/zlib-1.2.8 \
---with-pcre=%_builddir/pcre-8.38 \
+--with-zlib=%_builddir/zlib-1.2.11 \
+--with-pcre=%_builddir/pcre-8.41 \
 --http-client-body-temp-path=%nginx_prefix/cache/client_temp \
 --http-proxy-temp-path=%nginx_prefix/cache/proxy_temp \
 --http-fastcgi-temp-path=%nginx_prefix/cache/fastcgi_temp \
 --http-uwsgi-temp-path=%nginx_prefix/cache/uwsgi_temp \
 --http-scgi-temp-path=%nginx_prefix/cache/scgi_temp \
+--error-log-path=%nginx_prefix/logs/error.log \
+--http-log-path=%nginx_prefix/logs/access.log \
+--pid-path=%nginx_prefix/nginx.pid \
 --user=%name \
 --group=%name \
 --with-http_ssl_module \
 --with-openssl-opt=enable-tlsext \
---with-openssl=%_builddir/openssl-1.0.2h
+--with-openssl=%_builddir/openssl-1.0.2l
 
 %install
 # shamelessly nabbed and modified from 
@@ -112,9 +114,9 @@ if [ ${ret} -lt 1 ]
 %__install -p -m 0644 -o nginx -g nginx -D %_sourcedir/nginxtras/vhost.example.conf %buildroot/%nginx_prefix/sites-available/vhost.example.conf
 %__ln_s %nginx_prefix/sites-available/vhost.example.conf %buildroot/%nginx_prefix/sites-enabled/vhost.example.conf
 
-# add binary symlink to /usr/local/bin
-%__install -p -m 0755 -o root -g root -d %buildroot/%_prefix/local/bin
-%__ln_s %nginx_prefix/sbin/nginx %buildroot/%_prefix/local/bin/nginx
+# add binary symlink to /usr/local/sbin (a default path)
+%__install -p -m 0755 -o root -g root -d %buildroot/%_prefix/local/sbin
+%__ln_s %nginx_prefix/sbin/nginx %buildroot/%_prefix/local/sbin/nginx
 
 # add custom html / php files
 %__install -p -m 0644 -o nginx -g nginx -D %_sourcedir/nginxtras/index.html %buildroot/%nginx_prefix/html/index.html
@@ -126,7 +128,10 @@ if [ ${ret} -lt 1 ]
 %__chmod 0755 %buildroot/%nginx_prefix/sbin/nginx
 
 %files
-%nginx_prefix/sbin/nginx
+# disk cache
+%dir %nginx_prefix/cache
+
+# conf
 %config(noreplace) %nginx_prefix/conf/fastcgi.conf
 %config(noreplace) %nginx_prefix/conf/fastcgi.conf.default
 %config(noreplace) %nginx_prefix/conf/fastcgi_params
@@ -142,19 +147,33 @@ if [ ${ret} -lt 1 ]
 %config(noreplace) %nginx_prefix/conf/uwsgi_params
 %config(noreplace) %nginx_prefix/conf/uwsgi_params.default
 %config(noreplace) %nginx_prefix/conf/win-utf
-%config(noreplace) %nginx_prefix/sites-available/vhost.example.conf
-%config(noreplace) %nginx_prefix/sites-enabled/vhost.example.conf
-%config(noreplace) %_prefix/local/bin/nginx
-%config(noreplace) %_sysconfdir/logrotate.d/nginx
-%nginx_prefix/html/50x.html
+
+# html
+%config(noreplace) %nginx_prefix/html/50x.html
 %config(noreplace) %nginx_prefix/html/index.html
-%nginx_prefix/html/php-test.php
+%config(noreplace) %nginx_prefix/html/php-test.php
+
+# init.d script
 %_sysconfdir/init.d/nginx
+
+# logs
 %dir %nginx_prefix/logs
+%config(noreplace) %_sysconfdir/logrotate.d/nginx
+
+# sbin
+%nginx_prefix/sbin/nginx
+
+# ssl (until they call it opentls)
 %dir %nginx_prefix/ssl
-%dir %nginx_prefix/cache
+
+# sites-(available|enabled) taking a page from Apache
 %dir %nginx_prefix/sites-available
 %dir %nginx_prefix/sites-enabled
+%config(noreplace) %nginx_prefix/sites-available/vhost.example.conf
+%config(noreplace) %nginx_prefix/sites-enabled/vhost.example.conf
+
+# symlink
+%config(noreplace) %_prefix/local/sbin/nginx
 
 # append --define 'noclean 1' to rpmbuild if desired to keep the buildroot directory
 # shamelessly nabbed from

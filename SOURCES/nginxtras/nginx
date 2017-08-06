@@ -6,11 +6,8 @@
 # description:  NGINX is an HTTP(S) server, HTTP(S) reverse \
 #               proxy and IMAP/POP3 proxy server
 # processname: nginx
-# config:      /etc/nginx/nginx.conf
-# config:      /etc/sysconfig/nginx
-# pidfile:     /etc/nginx/logs/nginx.pid
-#
-# modified for custom install with all things in /etc/nginx
+# config:      /usr/local/nginx/conf/nginx.conf
+# pidfile:     /usr/local/nginx/logs/nginx.pid
 #
 
 
@@ -23,12 +20,12 @@
 # Check that networking is up.
 [ "$NETWORKING" = "no" ] && exit 0
 
-nginx="/etc/nginx/sbin/nginx"
+nginx="/usr/local/nginx/sbin/nginx"
 prog=$(basename $nginx)
 
-NGINX_CONF_FILE="/etc/nginx/conf/nginx.conf"
+NGINX_CONF_FILE="/usr/local/nginx/conf/nginx.conf"
 
-lockfile=/etc/nginx/logs/nginx
+lockfile=/usr/local/nginx/logs/nginx
 
 make_dirs() {
    # make required directories
