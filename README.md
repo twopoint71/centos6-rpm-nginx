@@ -4,6 +4,7 @@ Should work seamlessly on RHEL, Scientific Linux, Oracle Linux, Amazon Linux, an
 Big thanks to some old posts at stackoverflow and the EPEL nginx package maintainer Jamie Nguyen.
 
 This revision incorporates the following
+
 software | version
 -------- | -------
 nginx | 1.12.1
