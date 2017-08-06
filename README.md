@@ -21,7 +21,8 @@ Since some files require root ownership, it is best to build as root
    ```
 2. Run rpmbuild one time to get the initial file structure setup (yes, it will fail)
    ```bash
-   # cd rpmbuild -ba nginx.spec
+   # cd
+   # rpmbuild -ba nginx.spec
    ```
 3. Clone repo, files should populate in the correct directories
    ```bash
