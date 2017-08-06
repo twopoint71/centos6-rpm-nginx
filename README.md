@@ -14,7 +14,7 @@ zlib | 1.2.11
 openssl | 1.0.2l
 
 ## Build Guide
-Since some file require root ownership, I like to do the build as root
+Since some files require root ownership, it is best to build as root
 1. Assumes start from fresh server install, so some packages are needed
    ```bash
    # yum install -y gcc gcc-c++ make rpm-build wget
