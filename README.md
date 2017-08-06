@@ -1,7 +1,7 @@
 ## Nginx rpm spec for CentOS 6
-Installs all nginx items in the default nginx location /usr/local/nginx.
-Should work seamlessly on RHEL, Scientific Linux, Oracle Linux, Amazon Linux, and any Linux evolved from RHEL 6.
-Big thanks to some old posts at stackoverflow and the EPEL nginx package maintainer Jamie Nguyen.
+Installs all nginx items in the default nginx location /usr/local/nginx.  
+Should work seamlessly on RHEL, Scientific Linux, Oracle Linux, Amazon Linux, and any Linux evolved from RHEL 6.  
+Big thanks to some old posts at stackoverflow and the EPEL nginx package maintainer Jamie Nguyen.  
 
 This revision incorporates the following
 
