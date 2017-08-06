@@ -5,7 +5,7 @@ Big thanks to some old posts at stackoverflow and the EPEL nginx package maintai
 
 This revision incorporates the following
 software | version
--|-
+-------- | -------
 nginx | 1.12.1
 pcre | 8.41
 zlib | 1.2.11
