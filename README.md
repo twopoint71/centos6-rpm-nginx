@@ -1,20 +1,43 @@
-<h2>nginx rpm spec file & some nginxtras</h2>
+## Nginx rpm spec for CentOS 6
+Installs all nginx items in the default nginx location /usr/local/nginx.
+Should work seamlessly on RHEL, Scientific Linux, Oracle Linux, Amazon Linux, and any Linux evolved from RHEL 6.
+Big thanks to some old posts at stackoverflow and the EPEL nginx package maintainer Jamie Nguyen.
 
-<h3>nginx custom rpm build for CentOS 6</h3>
-<p>Pretty straight forward. Installs all nginx items in /etc/nginx<br>
-<p>Uses latest pcre, zlib, and openssl<br>
-<p>Should work seamlessly on RHEL, Scientific Linux, Oracle, and Amazon 6.<br>
-<p>Big thanks to some old posts at stackoverflow and the EPEL nginx package maintainer Jamie Nguyen.</p>
+This revision incorporates the following
+software | version
+-|-
+nginx | 1.12.1
+pcre | 8.41
+zlib | 1.2.11
+openssl | 1.0.2l
 
-<h3>about</h3>
-<p>This install puts all things nginx in the /etc/nginx directory.  Including logs, confs, the binary, all of it.</p>
-<p>This comes from an old habit.  I know this should rightfully be in /usr, but . . . old habits.</p>
-
-<p>Quick RPM Build Cheat</p>
-```
-rpmbuild -ba nginx.spec
-```
-
-<h3>Licensing</h3>
-<p>The MIT License.  See LICENSE.txt for details</p>
-
+## Build Guide
+Since some file require root ownership, I like to do the build as root
+1. Assumes start from fresh server install, so some packages are needed
+   ```bash
+   # yum install -y gcc gcc-c++ make rpm-build wget
+   ```
+2. Run rpmbuild one time to get the initial file structure setup (yes, it will fail)
+   ```bash
+   # cd rpmbuild -ba nginx.spec
+   ```
+3. Clone repo, files should populate in the correct directories
+   ```bash
+   # git clone https://github.com/twopoint71/centos6-rpm-nginx ./rpmbuild
+   ```
+4. Retrieve sources
+   ```bash
+   # cd rpmbuild/SOURCES
+   # wget http://nginx.org/download/nginx-1.12.1.tar.gz
+   # wget ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/pcre-8.41.tar.gz
+   # wget http://zlib.net/zlib-1.2.11.tar.gz
+   # wget https://www.openssl.org/source/openssl-1.0.2l.tar.gz
+   ```
+5. Build the rpm
+   ```bash
+   # cd ../SPECS
+   #rpmbuild -ba nginx.spec
+   ```
+   
+## Licensing
+The MIT License. See LICENSE.txt for details.
