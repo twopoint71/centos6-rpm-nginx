@@ -39,7 +39,7 @@ Since some files require root ownership, it is best to build as root
 5. Build the rpm
    ```bash
    # cd ../SPECS
-   #rpmbuild -ba nginx.spec
+   # rpmbuild -ba nginx.spec
    ```
    
 ## Licensing
