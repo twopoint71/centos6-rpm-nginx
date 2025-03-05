@@ -1,3 +1,7 @@
+## ARCHIVE NOTICE
+Since CentOS 6 is pretty far from use these days, marking this project as archived for historical reference only.
+
+
 ## CentOS 6 rpm spec for Nginx
 Installs all nginx items in the default nginx location /usr/local/nginx.  
 Customizations are under SOURCES/nginxtras (e.g. nginx.conf, etc).  
